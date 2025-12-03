@@ -8,8 +8,18 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
-        unique: true
+        unique: true,
+        sparse: true // Allows multiple documents to have no email
+    },
+    isEmailVerified: {
+        type: Boolean,
+        default: false
+    },
+    otp: {
+        type: String
+    },
+    otpExpires: {
+        type: Date
     },
     password: {
         type: String,

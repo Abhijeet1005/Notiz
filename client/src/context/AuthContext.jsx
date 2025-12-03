@@ -34,8 +34,8 @@ export const AuthProvider = ({ children }) => {
         loadUser();
     }, []);
 
-    const login = async (email, password) => {
-        const res = await api.post('/auth/login', { email, password });
+    const login = async (username, password) => {
+        const res = await api.post('/auth/login', { username, password });
         localStorage.setItem('token', res.data.token);
 
         // Load user data immediately
@@ -44,14 +44,25 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
     };
 
-    const register = async (username, email, password) => {
-        const res = await api.post('/auth/register', { username, email, password });
+    const register = async (username, password, email) => {
+        const res = await api.post('/auth/register', { username, password, email });
         localStorage.setItem('token', res.data.token);
 
         // Load user data immediately
         const userRes = await api.get('/auth/me');
         setUser(userRes.data);
         setIsAuthenticated(true);
+    };
+
+    const verifyEmail = async () => {
+        await api.post('/auth/verify-email');
+    };
+
+    const validateOTP = async (otp) => {
+        await api.post('/auth/validate-otp', { otp });
+        // Refresh user data to update verification status
+        const userRes = await api.get('/auth/me');
+        setUser(userRes.data);
     };
 
     const logout = () => {
@@ -61,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, isAuthenticated, login, register, logout }}>
+        <AuthContext.Provider value={{ user, loading, isAuthenticated, login, register, logout, verifyEmail, validateOTP }}>
             {children}
         </AuthContext.Provider>
     );

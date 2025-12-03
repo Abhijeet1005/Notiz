@@ -20,9 +20,9 @@ const AuthForm = ({ type, onSubmit, loading, error }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (type === 'signup') {
-            onSubmit(username, email, password);
+            onSubmit(username, password, email);
         } else {
-            onSubmit(email, password);
+            onSubmit(username, password);
         }
     };
 
@@ -39,30 +39,29 @@ const AuthForm = ({ type, onSubmit, loading, error }) => {
                     <CardContent className="space-y-4">
                         {error && <div className="text-red-500 text-sm">{error}</div>}
 
-                        {type === 'signup' && (
-                            <div className="space-y-2">
-                                <FormLabel htmlFor="username">Username</FormLabel>
-                                <Input
-                                    id="username"
-                                    placeholder="johndoe"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        )}
-
                         <div className="space-y-2">
-                            <FormLabel htmlFor="email">Email</FormLabel>
+                            <FormLabel htmlFor="username">Username</FormLabel>
                             <Input
-                                id="email"
-                                type="email"
-                                placeholder="m@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                id="username"
+                                placeholder="johndoe"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 required
                             />
                         </div>
+
+                        {type === 'signup' && (
+                            <div className="space-y-2">
+                                <FormLabel htmlFor="email">Email (Optional)</FormLabel>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    placeholder="m@example.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                        )}
 
                         <div className="space-y-2">
                             <FormLabel htmlFor="password">Password</FormLabel>

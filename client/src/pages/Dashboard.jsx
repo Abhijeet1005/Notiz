@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Layout from '../components/Layout';
 import TaskList from '../components/TaskList';
+import EmailVerification from '../components/EmailVerification';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from 'lucide-react';
@@ -21,6 +22,7 @@ const Dashboard = () => {
     return (
         <Layout>
             <div className="max-w-2xl mx-auto space-y-6">
+                <EmailVerification />
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold tracking-tight">Today's Tasks</h1>
                     <div className="text-muted-foreground">
