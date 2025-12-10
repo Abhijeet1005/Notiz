@@ -5,15 +5,23 @@ import { Button } from "@/components/ui/button"
 import { Check, LogOut, User, Clock, ShieldCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import { useNavigate } from "react-router-dom"
+
 const Settings = () => {
     const { user, logout } = useAuth()
     const { theme, setTheme, themes } = useTheme()
+    const navigate = useNavigate()
 
     if (!user) return <div className="p-8 text-center text-muted-foreground">Loading profile...</div>
 
     return (
         <div className="container max-w-2xl mx-auto py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h1 className="text-3xl font-bold">Profile & Settings</h1>
+            <div className="flex items-center gap-4">
+                <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+                    ← Back
+                </Button>
+                <h1 className="text-3xl font-bold">Profile & Settings</h1>
+            </div>
 
             {/* Profile Info */}
             <Card>

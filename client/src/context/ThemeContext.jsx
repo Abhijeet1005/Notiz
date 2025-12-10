@@ -11,7 +11,7 @@ export function ThemeProvider({ children }) {
         const root = window.document.documentElement
 
         // Remove all previous theme classes
-        root.classList.remove("light", "dark", "midnight", "sunset")
+        root.classList.remove("light", "dark", "midnight", "sunset", "neon", "forest", "lavender")
 
         if (theme !== "light") {
             root.classList.add(theme)
@@ -29,6 +29,9 @@ export function ThemeProvider({ children }) {
             { id: 'dark', name: 'Dark', color: '#0f172a' }, // Slate 900
             { id: 'midnight', name: 'Midnight', color: '#0b1120' }, // Deep Blue
             { id: 'sunset', name: 'Sunset', color: '#0c0a09' }, // Stone 950
+            { id: 'neon', name: 'Neon', color: '#000000' }, // Pure Black
+            { id: 'forest', name: 'Forest', color: '#052e16' }, // Green 950
+            { id: 'lavender', name: 'Lavender', color: '#f3e8ff' }, // Purple 100
         ]
     }
 
