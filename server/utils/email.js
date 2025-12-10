@@ -8,14 +8,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const sendOTP = async (email, otp) => {
-    console.log(`Attempting to send OTP to ${email}...`);
+const sendEmail = async (to, subject, text) => {
+    console.log(`Sending email to ${to}...`);
     try {
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Verify your email - Task App',
-            text: `Your verification code is: ${otp}. It expires in 10 minutes.`
+            to,
+            subject,
+            text
         });
         console.log('Email sent successfully!');
         return true;
@@ -25,4 +25,12 @@ const sendOTP = async (email, otp) => {
     }
 };
 
-module.exports = sendOTP;
+const sendOTP = async (email, otp) => {
+    return await sendEmail(
+        email,
+        'Verify your email - Task App',
+        `Your verification code is: ${otp}. It expires in 10 minutes.`
+    );
+};
+
+module.exports = { sendOTP, sendEmail };

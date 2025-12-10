@@ -22,6 +22,13 @@ const TaskSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
+    reminderDate: {
+        type: Date
+    },
+    reminderSent: {
+        type: Boolean,
+        default: false
+    },
     date: {
         type: Date,
         default: Date.now

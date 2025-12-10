@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const auth = require('../middleware/auth');
 const User = require('../models/User');
-const sendOTP = require('../utils/email');
+const { sendOTP } = require('../utils/email');
 
 // @route   POST api/auth/register
 // @desc    Register user

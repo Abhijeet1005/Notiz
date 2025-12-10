@@ -4,17 +4,20 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Save, ChevronDown, ChevronUp, Upload } from 'lucide-react';
+import { Trash2, Save, ChevronDown, ChevronUp, Upload, Bell } from 'lucide-react';
 import { useTasks } from '../context/TaskContext';
+import { useAuth } from '../context/AuthContext';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import api from '../api/axios';
 
 const TaskItem = ({ task }) => {
     const { updateTask, deleteTask } = useTasks();
+    const { user } = useAuth();
     const [isExpanded, setIsExpanded] = useState(false);
     const [details, setDetails] = useState(task.description || '');
     const [title, setTitle] = useState(task.title || '');
+    const [reminderDate, setReminderDate] = useState(task.reminderDate ? new Date(task.reminderDate).toISOString().slice(0, 16) : '');
     const [isEditing, setIsEditing] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
@@ -22,16 +25,29 @@ const TaskItem = ({ task }) => {
     useEffect(() => {
         setDetails(task.description || '');
         setTitle(task.title || '');
-    }, [task.description, task.title]);
+        setReminderDate(task.reminderDate ? new Date(task.reminderDate).toISOString().slice(0, 16) : '');
+    }, [task.description, task.title, task.reminderDate]);
 
     const handleToggleDone = () => {
         updateTask(task._id, { isDone: !task.isDone });
     };
 
     const handleSaveDetails = () => {
-        updateTask(task._id, { description: details, title: title });
+        updateTask(task._id, {
+            description: details,
+            title: title,
+            reminderDate: reminderDate || null
+        });
         setIsEditing(false);
         toast.success("Details saved successfully");
+    };
+
+    const handleReminderChange = (e) => {
+        if (!user.isEmailVerified) {
+            toast.error("Please verify your email to set reminders");
+            return;
+        }
+        setReminderDate(e.target.value);
     };
 
     const handleDelete = (e) => {
@@ -104,6 +120,29 @@ const TaskItem = ({ task }) => {
                             className="min-h-[100px] resize-none"
                             onClick={(e) => e.stopPropagation()}
                         />
+
+                        <div className="flex items-center space-x-2">
+                            <Bell className={cn("h-4 w-4", reminderDate ? "text-primary" : "text-muted-foreground")} />
+                            {user.isEmailVerified ? (
+                                <Input
+                                    type="datetime-local"
+                                    value={reminderDate}
+                                    onChange={handleReminderChange}
+                                    className="w-[240px] text-sm"
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                            ) : (
+                                <div className="text-sm text-muted-foreground flex items-center">
+                                    <span>Verify email to set reminders</span>
+                                    <Button variant="link" size="sm" className="px-2 h-auto" onClick={(e) => {
+                                        e.stopPropagation();
+                                        toast.info("Go to settings/profile to verify");
+                                    }}>
+                                        Verify
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Image Gallery */}
                         <div className="space-y-2">
