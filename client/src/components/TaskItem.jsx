@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Trash2, Save, ChevronDown, ChevronUp, Upload } from 'lucide-react';
 import { useTasks } from '../context/TaskContext';
@@ -13,19 +14,22 @@ const TaskItem = ({ task }) => {
     const { updateTask, deleteTask } = useTasks();
     const [isExpanded, setIsExpanded] = useState(false);
     const [details, setDetails] = useState(task.description || '');
+    const [title, setTitle] = useState(task.title || '');
     const [isEditing, setIsEditing] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     // Sync details if task prop changes (e.g. from server)
     useEffect(() => {
         setDetails(task.description || '');
-    }, [task.description]);
+        setTitle(task.title || '');
+    }, [task.description, task.title]);
 
     const handleToggleDone = () => {
         updateTask(task._id, { isDone: !task.isDone });
     };
 
     const handleSaveDetails = () => {
-        updateTask(task._id, { description: details });
+        updateTask(task._id, { description: details, title: title });
         setIsEditing(false);
         toast.success("Details saved successfully");
     };
@@ -54,12 +58,21 @@ const TaskItem = ({ task }) => {
                         onCheckedChange={handleToggleDone}
                         onClick={(e) => e.stopPropagation()}
                     />
-                    <span className={cn(
-                        "font-medium text-lg transition-all",
-                        task.isDone ? "line-through text-muted-foreground" : ""
-                    )}>
-                        {task.title}
-                    </span>
+                    {isExpanded ? (
+                        <Input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="font-medium text-lg h-auto p-1 -ml-1 border-transparent hover:border-input focus:border-primary transition-all"
+                        />
+                    ) : (
+                        <span className={cn(
+                            "font-medium text-lg transition-all",
+                            task.isDone ? "line-through text-muted-foreground" : ""
+                        )}>
+                            {task.title}
+                        </span>
+                    )}
                 </div>
                 <div className="flex items-center space-x-1">
                     {isExpanded && (
@@ -100,15 +113,22 @@ const TaskItem = ({ task }) => {
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                 {(task.images || []).map((img, index) => (
-                                    <div key={index} className="relative group aspect-video bg-muted rounded-md overflow-hidden">
-                                        <img src={img} alt="Task attachment" className="w-full h-full object-cover" />
+                                    <div
+                                        key={index}
+                                        className="relative group aspect-video bg-muted rounded-md overflow-hidden cursor-zoom-in"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedImage(img);
+                                        }}
+                                    >
+                                        <img src={img} alt="Task attachment" className="w-full h-full object-cover transition-transform hover:scale-105" />
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 const newImages = task.images.filter((_, i) => i !== index);
                                                 updateTask(task._id, { images: newImages });
                                             }}
-                                            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                         >
                                             <Trash2 className="h-3 w-3" />
                                         </button>
@@ -180,6 +200,35 @@ const TaskItem = ({ task }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Lightbox Overlay */}
+            {selectedImage && (
+                <div
+                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedImage(null);
+                    }}
+                >
+                    <div className="relative max-w-4xl max-h-screen w-full h-full flex items-center justify-center">
+                        <img
+                            src={selectedImage}
+                            alt="Full screen view"
+                            className="max-w-full max-h-full object-contain rounded-md shadow-2xl"
+                        />
+                        <button
+                            className="absolute top-4 right-4 text-white bg-black/50 hover:bg-black/70 rounded-full p-2 transition-colors"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedImage(null);
+                            }}
+                        >
+                            <span className="sr-only">Close</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+                        </button>
+                    </div>
+                </div>
+            )}
         </Card>
     );
 };
