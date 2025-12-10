@@ -119,4 +119,32 @@ router.delete('/:id', auth, async (req, res) => {
     }
 });
 
+// @route   DELETE api/tasks/completed
+// @desc    Delete all completed tasks
+// @access  Private
+router.delete('/completed', auth, async (req, res) => {
+    try {
+        // Find tasks to be deleted to handle images
+        const completedTasks = await Task.find({ user: req.user.id, isDone: true });
+
+        // Delete images from Cloudinary
+        const { deleteFromCloudinary } = require('../utils/cloudinary');
+        for (const task of completedTasks) {
+            if (task.images && task.images.length > 0) {
+                for (const imgUrl of task.images) {
+                    await deleteFromCloudinary(imgUrl);
+                }
+            }
+        }
+
+        // Delete tasks from DB
+        await Task.deleteMany({ user: req.user.id, isDone: true });
+
+        res.json({ msg: 'Completed tasks removed' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

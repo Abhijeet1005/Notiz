@@ -54,8 +54,19 @@ export const TaskProvider = ({ children }) => {
         }
     };
 
+    const clearCompletedTasks = async () => {
+        try {
+            // Optimistic update
+            setTasks(tasks.filter(task => !task.isDone));
+            await api.delete('/tasks/completed');
+        } catch (err) {
+            console.error("Error clearing completed tasks", err);
+            fetchTasks();
+        }
+    };
+
     return (
-        <TaskContext.Provider value={{ tasks, loading, fetchTasks, addTask, updateTask, deleteTask }}>
+        <TaskContext.Provider value={{ tasks, loading, fetchTasks, addTask, updateTask, deleteTask, clearCompletedTasks }}>
             {children}
         </TaskContext.Provider>
     );
