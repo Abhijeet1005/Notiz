@@ -30,19 +30,7 @@ const TaskList = () => {
 
     return (
         <>
-            {completedCount > 0 && (
-                <div className="flex justify-end mb-2 pr-4">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={clearCompletedTasks}
-                        className="text-muted-foreground hover:text-destructive"
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Clear Completed ({completedCount})
-                    </Button>
-                </div>
-            )}
+
             <ScrollArea className="h-[calc(100vh-240px)] pr-4">
                 <div className="space-y-3 pb-10">
                     {tasks.map(task => (
